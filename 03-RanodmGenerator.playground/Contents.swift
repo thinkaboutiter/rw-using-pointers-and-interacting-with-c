@@ -20,7 +20,7 @@ enum RandomSource {
     }
 }
 
-extension Integer {
+extension BinaryInteger {
     
     static var randomized: Self {
         let numbers = RandomSource.get(count: MemoryLayout<Self>.size)
@@ -30,5 +30,13 @@ extension Integer {
             }
         }
     }
-    
 }
+
+Int8.randomized
+UInt8.randomized
+Int16.randomized
+UInt16.randomized
+Int16.randomized
+UInt32.randomized
+Int64.randomized
+UInt64.randomized
