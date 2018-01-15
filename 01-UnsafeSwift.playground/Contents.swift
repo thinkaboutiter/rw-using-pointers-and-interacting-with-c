@@ -160,4 +160,17 @@ do {
     }
 }
 
-
+/**
+ Computing a Checksum
+ */
+do {
+    print("Checksum the bytes of a struct")
+    
+    var sampleStruct = SampleStruct(number: 25, flag: true)
+    
+    let checksum = withUnsafeBytes(of: &sampleStruct) { (bytes) -> UInt32 in
+        return ~bytes.reduce(UInt32(0)) { $0 + numericCast($1) }
+    }
+    
+    print("checksum", checksum) // prints checksum 4294967269
+}
