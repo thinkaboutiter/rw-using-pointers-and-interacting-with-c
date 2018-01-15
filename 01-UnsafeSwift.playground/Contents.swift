@@ -85,3 +85,32 @@ do {
         print("byte \(index): \(byte)")
     }
 }
+
+/**
+ Using Typed Pointers
+ */
+do {
+    print("Typed pointers")
+    
+    // Memory is allocated using the method UnsafeMutablePointer.allocate.
+    // The generic parameter lets Swift know the pointer will be used to load and store values of type Int.
+    let pointer = UnsafeMutablePointer<Int>.allocate(capacity: count)
+    pointer.initialize(to: 0, count: count)
+    defer {
+        pointer.deinitialize(count: count)
+        pointer.deallocate(capacity: count)
+    }
+    
+    // Typed pointers have a pointee property that provides a type-safe way to load and store values.
+    pointer.pointee = 42
+    pointer.advanced(by: 1).pointee = 6
+    pointer.pointee
+    pointer.advanced(by: 1).pointee
+    
+    let bufferPointer = UnsafeBufferPointer(start: pointer, count: count)
+    for (index, value) in bufferPointer.enumerated() {
+        print("value \(index): \(value)")
+    }
+}
+
+
