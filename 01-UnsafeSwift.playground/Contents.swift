@@ -174,3 +174,59 @@ do {
     
     print("checksum", checksum) // prints checksum 4294967269
 }
+
+/**
+ Three Rules of Unsafe Club
+ */
+// Rule #1
+do {
+    print("1. Don't return the pointer from withUnsafeBytes!")
+    
+    var sampleStruct = SampleStruct(number: 25, flag: true)
+    
+    let bytes = withUnsafeBytes(of: &sampleStruct) { bytes in
+        return bytes // strange bugs here we come ☠️☠️☠️
+    }
+    
+    print("Horse is out of the barn!", bytes)  /// undefined !!!
+}
+
+// Rule #2
+do {
+    print("2. Only bind to one type at a time!")
+    
+    let count = 3
+    let stride = MemoryLayout<Int16>.stride
+    let alignment = MemoryLayout<Int16>.alignment
+    let byteCount =  count * stride
+    
+    let pointer = UnsafeMutableRawPointer.allocate(bytes: byteCount, alignedTo: alignment)
+    
+    let typedPointer1 = pointer.bindMemory(to: UInt16.self, capacity: count)
+    
+    // Breakin' the Law... Breakin' the Law  (Undefined behavior)
+    let _ = pointer.bindMemory(to: Bool.self, capacity: count * 2)
+    
+    // If you must, do it this way:
+    typedPointer1.withMemoryRebound(to: Bool.self, capacity: count * 2) {
+        (boolPointer: UnsafeMutablePointer<Bool>) in
+        print(boolPointer.pointee)  // See Rule #1, don't return the pointer
+    }
+}
+
+// Rule #3... wait
+do {
+    print("3. Don't walk off the end... whoops!")
+    
+    let count = 3
+    let stride = MemoryLayout<Int16>.stride
+    let alignment = MemoryLayout<Int16>.alignment
+    let byteCount =  count * stride
+    
+    let pointer = UnsafeMutableRawPointer.allocate(bytes: byteCount, alignedTo: alignment)
+    let bufferPointer = UnsafeRawBufferPointer(start: pointer, count: byteCount + 1) // OMG +1????
+    
+    for byte in bufferPointer {
+        print(byte)  // pawing through memory like an animal
+    }
+}
