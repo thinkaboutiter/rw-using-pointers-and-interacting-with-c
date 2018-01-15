@@ -113,4 +113,36 @@ do {
     }
 }
 
+/**
+ Converting Raw Pointers to Typed Pointers
+ */
+do {
+    print("Converting raw pointers to typed pointers")
+    
+    let rawPointer = UnsafeMutableRawPointer.allocate(bytes: byteCount, alignedTo: alignment)
+    defer {
+        rawPointer.deallocate(bytes: byteCount, alignedTo: alignment)
+    }
+    
+    // The typed pointer is created by binding the memory to the required type Int.
+    // By binding memory, it can be accessed in a type-safe way.
+    // Memory binding is done behind the scenes when you create a typed pointer.
+    let typedPointer = rawPointer.bindMemory(to: Int.self, capacity: count)
+    typedPointer.initialize(to: 0, count: count)
+    defer {
+        typedPointer.deinitialize(count: count)
+    }
+    
+    typedPointer.pointee = 42
+    typedPointer.advanced(by: 1).pointee = 6
+    typedPointer.pointee
+    typedPointer.advanced(by: 1).pointee
+    
+    let bufferPointer = UnsafeBufferPointer(start: typedPointer, count: count)
+    for (index, value) in bufferPointer.enumerated() {
+        print("value \(index): \(value)")
+    }
+}
+
+
 
