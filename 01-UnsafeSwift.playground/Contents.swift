@@ -144,5 +144,20 @@ do {
     }
 }
 
+/**
+ Getting The Bytes of an Instance
+ */
+do {
+    print("Getting the bytes of an instance")
+    
+    var sampleStruct = SampleStruct(number: 25, flag: true)
+    
+    // prints out the raw bytes of the `SampleStruct` instance
+    withUnsafeBytes(of: &sampleStruct) { bytes in
+        for byte in bytes {
+            print(byte)
+        }
+    }
+}
 
 
