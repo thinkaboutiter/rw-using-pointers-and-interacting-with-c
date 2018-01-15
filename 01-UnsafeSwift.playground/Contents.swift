@@ -2,7 +2,10 @@
 
 import Foundation
 
-// Memory Layouts
+/**
+ Memory Layouts
+ */
+// Memory Layouts of basic types
 MemoryLayout<Int>.size          // returns 8 (on 64-bit)
 MemoryLayout<Int>.alignment     // returns 8 (on 64-bit)
 MemoryLayout<Int>.stride        // returns 8 (on 64-bit)
@@ -54,3 +57,31 @@ class SampleClass {
 MemoryLayout<SampleClass>.size      // returns 8 (on 64-bit)
 MemoryLayout<SampleClass>.stride    // returns 8 (on 64-bit)
 MemoryLayout<SampleClass>.alignment // returns 8 (on 64-bit)
+
+/**
+ Using Raw Pointers
+ */
+let count = 2
+let stride = MemoryLayout<Int>.stride
+let alignment = MemoryLayout<Int>.alignment
+let byteCount = stride * count
+
+do {
+    print("Raw pointers")
+    
+    let pointer = UnsafeMutableRawPointer.allocate(bytes: byteCount, alignedTo: alignment)
+    defer {
+        pointer.deallocate(bytes: byteCount, alignedTo: alignment)
+    }
+    
+    pointer.storeBytes(of: 42, as: Int.self)
+    pointer.advanced(by: stride).storeBytes(of: 6, as: Int.self)
+    pointer.load(as: Int.self)
+    pointer.advanced(by: stride).load(as: Int.self)
+    
+    // UnsafeRawBufferPointer lets you access memory as if it was a collection of bytes
+    let bufferPointer = UnsafeRawBufferPointer(start: pointer, count: byteCount)
+    for (index, byte) in bufferPointer.enumerated() {
+        print("byte \(index): \(byte)")
+    }
+}
